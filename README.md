@@ -20,3 +20,24 @@ twilio_token = "..."
 twilio_source_phone = '+13105551212'
 twilio_test_phone = '+13105551212'
 ```
+
+# Running 
+
+There are several files that you can run for different reasons:
+
+## test.py
+
+This script will run wordle and connect to the New York Times site and play wordle.  
+
+## sim.py
+
+This script is used to test out wordle solvers and measure there performance.  
+
+## game.py
+
+This script will let you play wordle on the command line
+
+## other files
+
+These other files provide functionality used on these scripts.  Or test code.  Many of these scripts when run will provide 
+some testing of the functionality they contain
