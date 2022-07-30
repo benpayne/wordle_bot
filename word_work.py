@@ -2,6 +2,8 @@ import json
 from math import log
 import re
 from unittest import result
+from wordle_fast import c_match, c_filter
+#from memory_profiler import profile
 
 #from game import result_done
 
@@ -40,24 +42,31 @@ def get_word_weight(word):
 #  occurance - 1, 2, 3
 #  or_more - if we know exactly the number or it's x or more, set when we see an absent on a doulble, tripple letter guess
 #  locations - array of known locations, max known_occurance in size.
+#  not_locations - array of known locations to not have this letter.
 class letter_info:
     def __init__(self, letter) -> None:
         self.occurance = 0
         self.or_more = True
-        self.locations = set()
+        self.locations = []
+        self.not_locations = []
         self.letter = letter
 
     def set_location(self, i):
         if i not in self.locations:
-            self.locations.add(i)
+            self.locations.append(i)
         assert len(self.locations) <= self.occurance
 
+    def set_not_location(self, i):
+        if i not in self.not_locations:
+            self.not_locations.append(i)
+
     def match(self, word):
+        return c_match(self, word)
+
+    def match_old(self, word):
         count = 0
-        locations = set()
         for i, l in enumerate(word):
             if l == self.letter:
-                locations.add(i)
                 count += 1
         if self.or_more and count < self.occurance:
             return False
@@ -66,10 +75,13 @@ class letter_info:
         for i in self.locations:
             if word[i] != self.letter:
                 return False
+        for i in self.not_locations:
+            if word[i] == self.letter:
+                return False
         return True
 
     def __str__(self):
-        return f"occurance: {self.occurance}, or_more: {self.or_more}, locations: {self.locations}"
+        return f"letter: {self.letter}, occurance: {self.occurance}, or_more: {self.or_more}, locations: {self.locations}, not_locations: {self.not_locations}"
 
 
 class letter_state:
@@ -91,9 +103,10 @@ class letter_state:
 
             if state == 'correct':
                 li.occurance += 1
-                li.locations.add(i)
+                li.set_location(i)
             elif state == 'present':
                 li.occurance += 1
+                li.set_not_location(i)
             elif state == 'absent':
                 li.or_more = False
 
@@ -107,10 +120,15 @@ class letter_state:
                     old_li.occurance = li.occurance
                 for i in li.locations:
                     old_li.set_location(i)
+                for i in li.not_locations:
+                    old_li.set_not_location(i)
             else:
                 self.known_letters[letter] = li
 
     def fliter_list(self, word_list):
+        return c_filter(word_list, self.known_letters)
+
+    def fliter_list_old(self, word_list):
         new_words = []
         for word in word_list:
             add_word = True
@@ -188,7 +206,7 @@ def result_done(result):
             return False
     return True
 
-
+#@profile
 def expected_information(word_list, word):
     # generate derived word list for all 243 permutations of the result, 
     # track the number of words in each list
@@ -196,25 +214,12 @@ def expected_information(word_list, word):
     # Entropy of that is log2(1/p) assgin that to the bucket 
     # take a weight average of each bucket wieghted by probability of that being the answer
 
-    result = ['absent'] * 5
     buckets = []
-    while not result_done(result):
+    for i in range(3**5):
+        result = number_to_result(i)
         ls = letter_state()
         ls.process_result(word, result)
         buckets.append(len(ls.fliter_list(word_list)))
-        #print(result)
-        for i in range(5):
-            if result[i] == 'correct':
-                result[i] = 'absent'
-                # carry to next bit
-            elif result[i] == 'absent':
-                result[i] = 'present'
-                break
-            elif result[i] == 'present':
-                result[i] = 'correct'
-                break
-    # append one for winning word
-    buckets.append(1)
 
     total = 0
     sum = 0
@@ -228,6 +233,57 @@ def expected_information(word_list, word):
     #print(f"{total/sum}")
     #print(buckets)
     return total/sum
+
+
+
+def expected_information_new(word_list, word):
+    wd = load_word_data()
+    buckets_words = wd[word]
+    buckets = []
+    # filter buckets
+    for i in range(3**5):
+        
+        buckets.append(len(ls.fliter_list(word_list)))
+
+    total = 0
+    sum = 0
+    for b in buckets:
+        p = b / len(word_list)
+        if p > 0:
+            i = log(1/p, 2)
+            total += p*i
+            sum += p
+
+    #print(f"{total/sum}")
+    #print(buckets)
+    return total/sum
+
+import pickle
+
+word_data = None
+def load_word_data():
+    global word_data
+    if word_data == None:
+        with open('data/word_data_cache.pickle', 'rb') as fp:
+            word_data = pickle.load(fp)
+    return word_data
+
+def generate_word_data():
+    all_words = get_all_words()
+    data = {}
+    for n, word in enumerate(all_words):
+        buckets = {}
+        print("\033[H\033[J", end="")
+        print(f"{n+1}/{len(all_words)} - {word}")
+        for i in range(3**5):
+            result = number_to_result(i)
+            ls = letter_state()
+            ls.process_result(word, result)
+            buckets[i] = ls.fliter_list(all_words)
+        data[word] = buckets
+    with open('data/word_data_cache.pickle', 'wb') as fp:
+        pickle.dump(data,fp)
+
 
 def letter_frequency():
 
@@ -272,8 +328,32 @@ def letter_frequency():
     print(f"fourth: {sorted(fourth.items(), key=lambda item: item[1], reverse=True)[0:3]}")
     print(f"fifth: {sorted(fifth.items(), key=lambda item: item[1], reverse=True)[0:3]}")
 
-def word_freq_test():
+import pandas as pd
+import numpy as np
+import math
+
+def build_work_freq_data():
     words = get_all_words()
+    weights = []
+    for w in words:
+        weights.append(get_word_weight(w))
+
+    df = pd.DataFrame({'words': get_all_words(), 'rank': weights})
+
+    df = df.sort_values(by='rank', ascending=False).reset_index(drop=True)
+    df['weights'] = 1 - (1 / (1 + np.exp(-(1/100)*(df.index - 4500))))
+    return df.set_index('words')
+
+
+def word_freq_test():
+    df = build_work_freq_data()
+    print(df)
+    print(df.iloc[4000:4010])
+    print(df.iloc[4500:4510])
+    print(df.iloc[5000:5010])
+    print(df.loc['stomp']['weights'])
+
+def old():
     weights = {}
     for w in words:
         weights[w] = get_word_weight(w)
@@ -301,6 +381,7 @@ def result_test():
         assert result_to_number(number_to_result(i)) == i
 
 if __name__ == "__main__":
-    #word_freq_test()
+    word_freq_test()
     #exp_info_test()
-    result_test()
+    #result_test()
+    #generate_word_data()

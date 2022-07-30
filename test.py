@@ -8,7 +8,10 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.keys import Keys
 import time
-from sim import wordle_bot, weighted_words
+from sim import wordle_bot, weighted_words, expected_info
+from game import result_done
+import pyperclip
+from text_sms import send_message
 
 def getRowResults(driver, row_id):
     state = []
@@ -31,7 +34,7 @@ if elem:
 
 time.sleep(1)
 
-sim  = weighted_words()
+sim  = expected_info()
 
 for i in range(6):
     guess = sim.generate_guess()
@@ -41,9 +44,17 @@ for i in range(6):
 
     result = getRowResults(driver, i)
     sim.process_result(guess, result)
-
-    print(result)
+    if result_done(result):
+        print(f"Solved in {i+1} steps")
+        break
+    else:
+        print(result)
 
 time.sleep(10)
 
+button = driver.find_element(By.ID, "share-button")
+button.click()
+time.sleep(1)
+print(pyperclip.paste())
+send_message(pyperclip.paste())
 driver.close()

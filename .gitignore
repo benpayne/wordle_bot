@@ -1,0 +1,7 @@
+account.py
+wordle_fast.egg-info/
+geckodriver.log
+.vscode
+__pycache__/
+build/
+dist/

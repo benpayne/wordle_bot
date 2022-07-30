@@ -1,8 +1,9 @@
 from hashlib import new
 from operator import ge
+import re
 from game import pick_winning_word, compare_guess, result_done, print_result
-from word_work import expected_information, get_words, get_all_words, get_possible_words, letter_info, letter_state
-
+from word_work import expected_information, build_work_freq_data, get_all_words, get_possible_words, letter_info, letter_state
+from multiprocessing import Pool
 
 class wordle_bot:
     def __init__(self) -> None:
@@ -20,6 +21,9 @@ class wordle_bot:
             return "tears"
         else:
             self.word_list = self.known_letters.fliter_list(self.word_list)
+            #for l, d in self.known_letters.known_letters.items():
+            #    print(d)
+            #print(self.word_list)
             if len(self.word_list) > 0:
                 word = self.pick_best_word(self.word_list)
                 if word not in self.word_list:
@@ -33,6 +37,7 @@ class wordle_bot:
     def process_result(self, guess, result):
         self.known_letters.process_result(guess, result)
 
+    #@profile
     def run(self, winning_word, print_res=False):
         for i in range(6):
             guess = self.generate_guess()
@@ -127,13 +132,14 @@ class weighted_words(wordle_bot):
 class expected_info(wordle_bot):
     def __init__(self) -> None:
         super().__init__()
+        self.word_freq = build_work_freq_data()
 
     def pick_best_word(self, word_list):
         words = {}
         highest = 0
         highest_word = None
         for w in word_list:
-            info = expected_information(word_list, w)
+            info = expected_information(word_list, w) * self.word_freq.loc[w]['weights']
             if info > highest:
                 highest = info
                 highest_word = w
@@ -142,38 +148,48 @@ class expected_info(wordle_bot):
 
         return highest_word
 
-def main():
-    #sim = weighted_words()
-    sim = expected_info()
-    all_words = get_possible_words()
-    buckets = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, -1: 0}
-    for i, word in enumerate(all_words):
-        sim.reset()
-        res = sim.run(word)
-        buckets[res] += 1
-        print("\033[H\033[J", end="")
-        print(f"{i}/{len(all_words)} {buckets} - {word}")
 
+def main():
+    all_words = get_possible_words()
+
+    with Pool(8) as executor:
+        results = executor.map(run_once, all_words)
+
+    buckets = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, -1: 0}
+    for r in results:
+        buckets[r] += 1
+
+    #print("\033[H\033[J", end="")
+    #print(f"{i}/{len(all_words)} {buckets} - {word}")
+    print(buckets)
     print(f"Failed {buckets[-1]/len(all_words)*100:0.2f}%")
-    score = (buckets[1] + (2 * buckets[2]) + (3 * buckets[3]) + (4 * buckets[4]) + (5 * buckets[5]) + (6 * buckets[6])) / len(all_words)
+    score = (buckets[1] + (2 * buckets[2]) + (3 * buckets[3]) + (4 * buckets[4]) + (5 * buckets[5]) + (6 * buckets[6])) / (len(all_words) - buckets[-1])
     print(f"Average Rating {score:0.2f}")
 
-def run_once():
-    winning_word = pick_winning_word()
-    #winning_word = "cinch"
-    print(f"Winning word is {winning_word}")
+
+#@profile
+def run_once(winning_word, print_res=False):
+    if print_res: 
+        print(f"Winning word is {winning_word}")
 
     #sim = weighted_words()
     sim = expected_info()
-    res = sim.run(winning_word, print_res=True)
+    res = sim.run(winning_word, print_res=print_res)
+    print("\033[H\033[J", end="")
+    print(f"{winning_word} - {res}")
     if res > 0:
-        print(f"Congrats won in {res} rounds!!!!")
+        if print_res: 
+            print(f"Congrats won in {res} rounds!!!!")
+        return res
     else:
-        print(f"Failed, the word was {winning_word}")
+        if print_res:
+            print(f"Failed, the word was {winning_word}") 
+        return -1
+
 
 
 if __name__ == "__main__":
-    #main()
-    run_once()
+    main()
+    #run_once(pick_winning_word(), True)
     #test()
 
