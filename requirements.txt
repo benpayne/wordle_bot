@@ -1,4 +1,8 @@
+pandas
 selenium
-pyperclip
 twilio
 json
+Flask
+pysqlite3
+SQLAlchemy
+apscheduler

@@ -1,9 +1,8 @@
 import random
-import re
-from word_work import get_words
+from word_work import get_all_words, get_possible_words 
 
 def pick_winning_word():
-    words = get_words()
+    words = get_possible_words()
     random.seed()
     i = random.randrange(len(words))
     return words[i]
@@ -15,21 +14,22 @@ def read_guess():
         word = input()
         if len(word) != 5:
             print("Word must be 5 letter long")
-        elif word not in get_words():
+        elif word not in get_all_words():
             print("Not a valid word")
         else:
             valid = True
     return word
 
 def print_result(word, states):
+    string = ""
     for i, l in enumerate(word):
         if states[i] == 'correct':
-            print('\033[42m' + l + '\033[0m', end='')
+            string += '\033[42m' + l + '\033[0m'
         elif states[i] == 'present':
-            print('\033[43m' + l + '\033[0m', end='')
+            string += '\033[43m' + l + '\033[0m'
         else:
-            print(l, end='')
-    print('')
+            string += l
+    return string
 
 #read_guess()
 
@@ -67,7 +67,7 @@ def main():
     for i in range(6):
         guess = read_guess()
         result = compare_guess(winning_word, guess)
-        print_result(guess, result)
+        print(print_result(guess, result))
         if result_done(result):
             won = True
             print("Congrats!!!!")

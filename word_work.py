@@ -1,7 +1,5 @@
 import json
 from math import log
-import re
-from unittest import result
 from wordle_fast import c_match, c_filter
 #from memory_profiler import profile
 
@@ -284,6 +282,59 @@ def generate_word_data():
     with open('data/word_data_cache.pickle', 'wb') as fp:
         pickle.dump(data,fp)
 
+def letter_info_test():
+    li = letter_info('s')
+    li.occurance = 1
+    li.locations.add(0)
+
+    sim = wordle_bot()
+
+    assert li.match("sleep") == True
+    li.letter = 'e'
+    assert li.match("sleep") == False
+    li.occurance = 2
+    li.locations = set()
+    li.locations.add(2)
+    assert li.match("sleep") == True
+    li.letter = 's'
+    assert li.match("sleep") == False
+
+    li.occurance = 1
+    li.or_more = False
+    assert li.match("sleep") == False
+
+    li.occurance = 1
+    li.or_more = False
+    li.locations = set()
+    li.letter = 'e'
+    assert li.match("sleep") == False
+
+    res = ['correct', 'absent', 'present', 'absent', 'present']
+    sim.process_result("sleep", res)
+    print(f"e: {sim.known_letters['e']}")
+    print(f"s: {sim.known_letters['s']}")
+    print(f"l: {sim.known_letters['l']}")
+    print(f"p: {sim.known_letters['p']}")
+
+    assert len(sim.known_letters) == 4
+    assert 's' in sim.known_letters.keys()
+    assert 'l' in sim.known_letters.keys()
+    assert 'e' in sim.known_letters.keys()
+    assert 'p' in sim.known_letters.keys()
+    assert sim.known_letters['e'].or_more == False
+    assert sim.known_letters['e'].occurance == 1
+    assert sim.known_letters['s'].occurance == 1
+    assert sim.known_letters['s'].or_more == True
+    assert len(sim.known_letters['s'].locations) == 1
+    assert sim.known_letters['l'].or_more == False
+    assert sim.known_letters['l'].occurance == 0
+    assert sim.known_letters['p'].or_more == True
+    assert sim.known_letters['p'].occurance == 1
+ 
+    guess = sim.generate_guess()
+    print(f"guess: {guess}")
+    assert guess == 'scape'
+
 
 def letter_frequency():
 
@@ -385,3 +436,4 @@ if __name__ == "__main__":
     #exp_info_test()
     #result_test()
     #generate_word_data()
+    #letter_info_test()

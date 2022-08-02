@@ -1,7 +1,5 @@
-from hashlib import new
-from operator import ge
-import re
-from game import pick_winning_word, compare_guess, result_done, print_result
+import argparse
+from game import compare_guess, result_done, print_result, pick_winning_word
 from word_work import expected_information, build_work_freq_data, get_all_words, get_possible_words, letter_info, letter_state
 from multiprocessing import Pool
 
@@ -44,64 +42,13 @@ class wordle_bot:
             result = compare_guess(winning_word, guess)
             self.process_result(guess, result)
             if print_res:
-                print_result(guess, result)
+                print(print_result(guess, result))
             if result_done(result):
                 return i + 1
         # failed
         return -1
 
-def test():
-    li = letter_info('s')
-    li.occurance = 1
-    li.locations.add(0)
 
-    sim = wordle_bot()
-
-    assert li.match("sleep") == True
-    li.letter = 'e'
-    assert li.match("sleep") == False
-    li.occurance = 2
-    li.locations = set()
-    li.locations.add(2)
-    assert li.match("sleep") == True
-    li.letter = 's'
-    assert li.match("sleep") == False
-
-    li.occurance = 1
-    li.or_more = False
-    assert li.match("sleep") == False
-
-    li.occurance = 1
-    li.or_more = False
-    li.locations = set()
-    li.letter = 'e'
-    assert li.match("sleep") == False
-
-    res = ['correct', 'absent', 'present', 'absent', 'present']
-    sim.process_result("sleep", res)
-    print(f"e: {sim.known_letters['e']}")
-    print(f"s: {sim.known_letters['s']}")
-    print(f"l: {sim.known_letters['l']}")
-    print(f"p: {sim.known_letters['p']}")
-
-    assert len(sim.known_letters) == 4
-    assert 's' in sim.known_letters.keys()
-    assert 'l' in sim.known_letters.keys()
-    assert 'e' in sim.known_letters.keys()
-    assert 'p' in sim.known_letters.keys()
-    assert sim.known_letters['e'].or_more == False
-    assert sim.known_letters['e'].occurance == 1
-    assert sim.known_letters['s'].occurance == 1
-    assert sim.known_letters['s'].or_more == True
-    assert len(sim.known_letters['s'].locations) == 1
-    assert sim.known_letters['l'].or_more == False
-    assert sim.known_letters['l'].occurance == 0
-    assert sim.known_letters['p'].or_more == True
-    assert sim.known_letters['p'].occurance == 1
- 
-    guess = sim.generate_guess()
-    print(f"guess: {guess}")
-    assert guess == 'scape'
 
 
 import json
@@ -135,21 +82,23 @@ class expected_info(wordle_bot):
         self.word_freq = build_work_freq_data()
 
     def pick_best_word(self, word_list):
-        words = {}
+        def map_fn(word):
+            return expected_information(word_list, word), self.word_freq.loc[word]['weights']
+
+        weights = map(map_fn, word_list)
         highest = 0
         highest_word = None
-        for w in word_list:
-            info = expected_information(word_list, w) * self.word_freq.loc[w]['weights']
-            if info > highest:
-                highest = info
-                highest_word = w
-            elif highest_word == None:
-                highest_word = w
-
+        for i, w in enumerate(weights):
+            p = w[0] * w[1]
+            print(f"{word_list[i]} -> ({w[0]:0.2f}, {w[1]:0.2f}) = {p:0.2f}, ", end='')
+            if p > highest or highest_word == None:
+                highest = p
+                highest_word = word_list[i]
+        print(f" highest word is {highest_word}")
         return highest_word
 
 
-def main():
+def run_all_words():
     all_words = get_possible_words()
 
     with Pool(8) as executor:
@@ -175,8 +124,9 @@ def run_once(winning_word, print_res=False):
     #sim = weighted_words()
     sim = expected_info()
     res = sim.run(winning_word, print_res=print_res)
-    print("\033[H\033[J", end="")
-    print(f"{winning_word} - {res}")
+    if not print_res:
+        print("\033[H\033[J", end="")
+        print(f"{winning_word} - {res}")
     if res > 0:
         if print_res: 
             print(f"Congrats won in {res} rounds!!!!")
@@ -187,9 +137,22 @@ def run_once(winning_word, print_res=False):
         return -1
 
 
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-o', '--once', action='store_true', help='run the simulaton on one random word')
+    parser.add_argument('-w', '--word', help='run the simulaton on the specified word')
+    args = parser.parse_args()
+
+    print(args)
+
+    if args.word:
+        run_once(args.word, True)
+    elif args.once:
+        run_once(pick_winning_word(), True)
+    else:
+        run_all_words()
+
 
 if __name__ == "__main__":
     main()
-    #run_once(pick_winning_word(), True)
-    #test()
 

@@ -1,0 +1,28 @@
+Flask App
+- main page shows todays results - no words, just text style
+- page with full details
+- webhook for incoming text messages from twilio
+- nightly task to solve wordle and update database
+- trigger text messages of answers at users designated time
+
+Database 
+- table of solution data 
+- table of users (phone number, text answers, time to text, )
+
+
+solution data 
+- date 
+- blanks string
+- row1_word
+- row1_result
+- row2_word
+- row2_result
+- row3_word
+- row3_result
+- row4_word
+- row4_result
+- row5_word
+- row5_result
+- row6_word
+- row6_result
+
