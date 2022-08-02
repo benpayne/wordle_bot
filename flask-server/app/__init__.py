@@ -9,6 +9,9 @@ scheduler = BackgroundScheduler()
 scheduler.add_job(wordle_bot, trigger='cron', hour='0', minute='20')
 scheduler.start()
 
+if get_results(date.today().isoformat()):
+    scheduler.add_job(wordle_bot)
+
 app = Flask(__name__)
 
 @app.route("/")

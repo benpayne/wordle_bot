@@ -6,7 +6,6 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.keys import Keys
 import time
-import pyperclip
 
 from sim import wordle_bot, weighted_words, expected_info
 from game import print_result, result_done

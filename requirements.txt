@@ -1,7 +1,6 @@
 pandas
 selenium
 twilio
-json
 Flask
 pysqlite3
 SQLAlchemy

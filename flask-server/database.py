@@ -39,10 +39,12 @@ def get_results(date=None):
     session = sessionmaker()
     session.configure(bind=engine)
     s = session()
-    r = s.query(Results).filter_by(date=date).first()
-    print(r.date)
-    return r.result_string, json.loads(r.row_data)
-
+    try:
+        r = s.query(Results).filter_by(date=date).first()
+        print(r.date)
+        return r.result_string, json.loads(r.row_data)
+    except:
+        return None, None
 
 def main():
     store_results("string", [("tears", ['absent', 'present', 'present', 'absent', 'absent']),
