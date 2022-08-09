@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wordle-deployment
+  labels:
+    app: wordle
+    name: wordle
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wordle
+  template:
+    metadata:
+      labels:
+        app: wordle
+    spec:
+      containers:
+        - name: wordlebot
+          image: benpayne/wordlebot:latest
+          env:
+            - name: SELENIUM_ADDR
+              value: "selenium-service"
+            - name: SELENIUM_PORT
+              value: "4444"
+          ports:
+            - containerPort: 80
+              protocol: TCP
+

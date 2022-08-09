@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: selenium-standalone-deployment
+  labels:
+    app: selenium-standalone
+    name: selenium-standalone
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: selenium-standalone
+  template:
+    metadata:
+      labels:
+        app: selenium-standalone
+    spec:
+      containers:
+        - name: selenium-standalone-firefox
+          image: selenium/standalone-firefox:4.3.0-20220726
+          env:
+            - name: JAVA_OPTS
+              value: "-Xmx1024m"
+            - name: POOL_MAX
+              value: "500"
+            - name: GRID_NEW_SESSION_WAIT_TIMEOUT
+              value: "-1"
+            - name: GRID_JETTY_MAX_THREADS
+              value: "-1"
+            - name: GRID_NODE_POLLING
+              value: "5000"
+            - name: GRID_CLEAN_UP_CYCLE
+              value: "5000"
+            - name: GRID_TIMEOUT
+              value: "600"
+            - name: GRID_BROWSER_TIMEOUT
+              value: "600"
+            - name: GRID_MAX_SESSION
+              value: "5"
+            - name: GRID_UNREGISTER_IF_STILL_DOWN_AFTER
+              value: "30000"
+          ports:
+            - containerPort: 4444
+              protocol: TCP
+            - containerPort: 7900
+              protocol: TCP
+

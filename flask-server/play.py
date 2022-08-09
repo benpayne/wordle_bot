@@ -6,11 +6,13 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.keys import Keys
 import time
+import argparse
+import pyperclip
 
 from sim import wordle_bot, weighted_words, expected_info
 from game import print_result, result_done
 from text_sms import send_message
-from database import store_results
+from database import store_results, db_quit
 
 def getRowResults(driver, row_id):
     state = []
@@ -22,13 +24,24 @@ def getRowResults(driver, row_id):
         state.append(t.get_attribute("data-state"))
     return state
 
-def wordle_bot():
-    options = webdriver.FirefoxOptions()
-    driver = webdriver.Remote(
-        command_executor='http://192.168.1.202:4444/wd/hub',
-        options=options
-    )   
-    #driver = webdriver.Safari()
+def wordle_bot(addr, port, local):
+    if addr == None:
+        addr = "192.168.1.202"
+    if port == None:
+        port = 4444
+
+    if local:
+        driver = webdriver.Safari()
+    else:
+        options = webdriver.FirefoxOptions()
+        #options = webdriver.ChromeOptions()
+        driver = webdriver.Remote(
+        #   command_executor='http://192.168.1.202:30525/wd/hub',
+            command_executor=f"http://{addr}:{port}/wd/hub",
+            options=options
+        )   
+
+    print("driver created")
     driver.get("https://www.nytimes.com/games/wordle/index.html")
     elem = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, 'Modal-module_closeIcon__b4z74')))  
     action = ActionChains(driver)
@@ -39,13 +52,13 @@ def wordle_bot():
 
     time.sleep(1)
 
-    sim  = expected_info()
+    sim = expected_info(print_list=True)
 
     answer = ""
     data = []
 
     for i in range(6):
-        guess = sim.generate_guess()
+        guess = sim.generate_guess(i)
         action.send_keys(guess, Keys.RETURN).perform()
 
         time.sleep(3)
@@ -60,14 +73,32 @@ def wordle_bot():
         else:
             print(result)
 
-    time.sleep(10)
+    time.sleep(5)
 
-    button = driver.find_element(By.ID, "share-button")
-    button.click()
-    time.sleep(1)
+    if local:
+        button = driver.find_element(By.ID, "share-button")
+        button.click()
+        time.sleep(1)
+        print(pyperclip.paste())
+
     store_results("", data)
     print(answer)
     driver.close()
 
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-a', '--addr', help='address to connect to for the remote web driver')
+    parser.add_argument('-p', '--port', help='port to connect to for the remote web driver')
+    parser.add_argument('-l', '--local', action='store_true', help='run the with the local web driver')
+    args = parser.parse_args()
+
+    print(args)
+
+    wordle_bot(args.addr, args.port, args.local)
+
+    db_quit()
+
+
 if __name__ == "__main__":
-    wordle_bot()
+    main()

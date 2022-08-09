@@ -1,0 +1,116 @@
+<!doctype html>
+<html>
+<head>
+    <title>Beat the BOT</title>
+    <link rel="stylesheet" href="/static/wordle.css">
+    <script>
+    function seeSolution() {
+        window.location.href = "{{ url_for('dates_answer', date=date) }}";
+    }
+    function backToPartern() {
+        window.location.href = "{{ url_for('dates_pattern', date=date) }}";
+    }
+    function playWordle() {
+        window.location.href = "{{ url_for('play_wordle') }}";
+    }
+    </script>
+</head>
+<body>
+    <div class="center">
+    <h1>Beat the BOT</h1>
+        <div class="game-table">
+            <div class="parent">
+                <div class="{{ data[0][1][0] }}">{{ data[0][0][0] if show_answer else "" }}</div>
+                <div class="{{ data[0][1][1] }}">{{ data[0][0][1] if show_answer else "" }}</div>
+                <div class="{{ data[0][1][2] }}">{{ data[0][0][2] if show_answer else "" }}</div>
+                <div class="{{ data[0][1][3] }}">{{ data[0][0][3] if show_answer else "" }}</div>
+                <div class="{{ data[0][1][4] }}">{{ data[0][0][4] if show_answer else "" }}</div>
+            </div>
+            <div class="parent">
+                {% if data|length > 1 %}
+                <div class="{{ data[1][1][0] }}">{{ data[1][0][0] if show_answer else "" }}</div>
+                <div class="{{ data[1][1][1] }}">{{ data[1][0][1] if show_answer else "" }}</div>
+                <div class="{{ data[1][1][2] }}">{{ data[1][0][2] if show_answer else "" }}</div>
+                <div class="{{ data[1][1][3] }}">{{ data[1][0][3] if show_answer else "" }}</div>
+                <div class="{{ data[1][1][4] }}">{{ data[1][0][4] if show_answer else "" }}</div>
+                {% else %}
+                <div class="column"></div>
+                <div class="column"></div>
+                <div class="column"></div>
+                <div class="column"></div>
+                <div class="column"></div>
+                {% endif %}
+            </div>
+            <div class="parent">
+                {% if data|length > 2 %}
+                <div class="{{ data[2][1][0] }}">{{ data[2][0][0] if show_answer else "" }}</div>
+                <div class="{{ data[2][1][1] }}">{{ data[2][0][1] if show_answer else "" }}</div>
+                <div class="{{ data[2][1][2] }}">{{ data[2][0][2] if show_answer else "" }}</div>
+                <div class="{{ data[2][1][3] }}">{{ data[2][0][3] if show_answer else "" }}</div>
+                <div class="{{ data[2][1][4] }}">{{ data[2][0][4] if show_answer else "" }}</div>
+                {% else %}
+                <div class="column"></div>
+                <div class="column"></div>
+                <div class="column"></div>
+                <div class="column"></div>
+                <div class="column"></div>
+                {% endif %}
+            </div>    
+            <div class="parent">
+                {% if data|length  > 3 %}
+                <div class="{{ data[3][1][0] }}">{{ data[3][0][0] if show_answer else "" }}</div>
+                <div class="{{ data[3][1][1] }}">{{ data[3][0][1] if show_answer else "" }}</div>
+                <div class="{{ data[3][1][2] }}">{{ data[3][0][2] if show_answer else "" }}</div>
+                <div class="{{ data[3][1][3] }}">{{ data[3][0][3] if show_answer else "" }}</div>
+                <div class="{{ data[3][1][4] }}">{{ data[3][0][4] if show_answer else "" }}</div>
+                {% else %}
+                <div class="column"></div>
+                <div class="column"></div>
+                <div class="column"></div>
+                <div class="column"></div>
+                <div class="column"></div>
+                {% endif %}
+            </div>    
+            <div class="parent">
+                {% if data|length  > 4 %}
+                <div class="{{ data[4][1][0] }}">{{ data[4][0][0] if show_answer else "" }}</div>
+                <div class="{{ data[4][1][1] }}">{{ data[4][0][1] if show_answer else "" }}</div>
+                <div class="{{ data[4][1][2] }}">{{ data[4][0][2] if show_answer else "" }}</div>
+                <div class="{{ data[4][1][3] }}">{{ data[4][0][3] if show_answer else "" }}</div>
+                <div class="{{ data[4][1][4] }}">{{ data[4][0][4] if show_answer else "" }}</div>
+                {% else %}
+                <div class="column"></div>
+                <div class="column"></div>
+                <div class="column"></div>
+                <div class="column"></div>
+                <div class="column"></div>
+                {% endif %}
+            </div>    
+            <div class="parent">
+                {% if data|length  > 5 %}
+                <div class="{{ data[5][1][0] }}">{{ data[5][0][0] if show_answer else "" }}</div>
+                <div class="{{ data[5][1][1] }}">{{ data[5][0][1] if show_answer else "" }}</div>
+                <div class="{{ data[5][1][2] }}">{{ data[5][0][2] if show_answer else "" }}</div>
+                <div class="{{ data[5][1][3] }}">{{ data[5][0][3] if show_answer else "" }}</div>
+                <div class="{{ data[5][1][4] }}">{{ data[5][0][4] if show_answer else "" }}</div>
+                {% else %}
+                <div class="column"></div>
+                <div class="column"></div>
+                <div class="column"></div>
+                <div class="column"></div>
+                <div class="column"></div>
+                {% endif %}
+            </div>    
+        </div>
+        <div class="center">
+            {{ result }}
+            {% if show_answer == false %}
+            <button id="select_button" onclick="seeSolution()">See the full solution</button><BR>
+            {% else %}
+            <button id="select_button" onclick="backToPartern()">Back to pattern</button><BR>
+            {% endif %}
+            <button id="play_button" onclick="playWordle()">Play Wordle</button>
+        </div>   
+    </div>
+</body>
+</html>

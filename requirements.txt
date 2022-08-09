@@ -5,3 +5,6 @@ Flask
 pysqlite3
 SQLAlchemy
 apscheduler
+pyperclip
+gunicorn
+Flask-APScheduler

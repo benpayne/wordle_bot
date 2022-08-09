@@ -224,7 +224,7 @@ def expected_information(word_list, word):
     for b in buckets:
         p = b / len(word_list)
         if p > 0:
-            i = log(1/p, 2)
+            i = probability_to_entrope(p)
             total += p*i
             sum += p
 
@@ -232,7 +232,8 @@ def expected_information(word_list, word):
     #print(buckets)
     return total/sum
 
-
+def probability_to_entrope(p):
+    return log(1/p, 2)
 
 def expected_information_new(word_list, word):
     wd = load_word_data()

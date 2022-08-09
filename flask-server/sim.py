@@ -1,29 +1,36 @@
 import argparse
 from game import compare_guess, result_done, print_result, pick_winning_word
-from word_work import expected_information, build_work_freq_data, get_all_words, get_possible_words, letter_info, letter_state
+from word_work import expected_information, build_work_freq_data, get_all_words, get_possible_words, letter_info, letter_state, probability_to_entrope
 from multiprocessing import Pool
 
 class wordle_bot:
-    def __init__(self) -> None:
+    def __init__(self, print_res = False) -> None:
         self.reset()
+        self.print_res = print_res
 
     def reset(self):
         self.known_letters = letter_state()
         self.word_list = get_all_words()
+        self.actual_info = 0
 
-    def pick_best_word(self, word_list):
+    def pick_best_word(self, word_list, round):
         return word_list[0]
 
-    def generate_guess(self):
+    def generate_guess(self, round):
         if self.known_letters.empty():
             return "tears"
         else:
+            word_list_orig = len(self.word_list)
             self.word_list = self.known_letters.fliter_list(self.word_list)
+            information = probability_to_entrope(len(self.word_list)/word_list_orig)
+            self.actual_info += information
+            if self.print_res:
+                print(f"actual information: {information:0.2f}, total information: {self.actual_info:0.2f}")
             #for l, d in self.known_letters.known_letters.items():
             #    print(d)
             #print(self.word_list)
             if len(self.word_list) > 0:
-                word = self.pick_best_word(self.word_list)
+                word = self.pick_best_word(self.word_list, round)
                 if word not in self.word_list:
                     print(f"{word} not in list {self.word_list}")
                 self.word_list.remove(word)
@@ -36,12 +43,12 @@ class wordle_bot:
         self.known_letters.process_result(guess, result)
 
     #@profile
-    def run(self, winning_word, print_res=False):
+    def run(self, winning_word):
         for i in range(6):
-            guess = self.generate_guess()
+            guess = self.generate_guess(i)
             result = compare_guess(winning_word, guess)
             self.process_result(guess, result)
-            if print_res:
+            if self.print_res:
                 print(print_result(guess, result))
             if result_done(result):
                 return i + 1
@@ -59,7 +66,7 @@ class weighted_words(wordle_bot):
         fp = open("data/freq_map.txt", "r")
         self.word_data = json.load(fp)
 
-    def pick_best_word(self, word_list):
+    def pick_best_word(self, word_list, round):
         words = {}
         highest = 0
         highest_word = None
@@ -77,24 +84,35 @@ class weighted_words(wordle_bot):
         return highest_word
 
 class expected_info(wordle_bot):
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, print_list=False) -> None:
+        super().__init__(print_list)
         self.word_freq = build_work_freq_data()
+        self.print_list = print_list
 
-    def pick_best_word(self, word_list):
+    def pick_best_word(self, word_list, round):
         def map_fn(word):
             return expected_information(word_list, word), self.word_freq.loc[word]['weights']
 
         weights = map(map_fn, word_list)
         highest = 0
         highest_word = None
+        highest_data = None
         for i, w in enumerate(weights):
-            p = w[0] * w[1]
-            print(f"{word_list[i]} -> ({w[0]:0.2f}, {w[1]:0.2f}) = {p:0.2f}, ", end='')
+            if self.actual_info < 7:
+                p = w[0]
+            elif self.actual_info < 10:
+                p = w[0] * w[1]
+            else:
+                p = w[1]
+            if self.print_list:
+                print(f"{word_list[i]} -> ({w[0]:0.2f}, {w[1]:0.2f}) = {p:0.2f}, ", end='')
             if p > highest or highest_word == None:
                 highest = p
                 highest_word = word_list[i]
-        print(f" highest word is {highest_word}")
+                highest_data = w
+        if self.print_list:
+            print("")
+            print(f"highest word is {highest_word}, expected info: {highest_data[0]:0.2f}, word freq {highest_data[1]:0.4f}") 
         return highest_word
 
 
@@ -122,8 +140,8 @@ def run_once(winning_word, print_res=False):
         print(f"Winning word is {winning_word}")
 
     #sim = weighted_words()
-    sim = expected_info()
-    res = sim.run(winning_word, print_res=print_res)
+    sim = expected_info(print_list=print_res)
+    res = sim.run(winning_word)
     if not print_res:
         print("\033[H\033[J", end="")
         print(f"{winning_word} - {res}")

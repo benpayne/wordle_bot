@@ -1,0 +1,106 @@
+<!doctype html>
+<html>
+<head>
+    <title>Beat the BOT</title>
+    <link rel="stylesheet" href="/static/wordle.css">
+    <script>
+    function seeSolution() {
+        window.location.href = "{{ url_for('top') }}";
+    }
+    function pressedkey(event) {
+        let letter = event.target.getAttribute('letter');
+        console.log("letter is " + letter);
+    }
+    </script>
+</head>
+<body>
+    <div class="center">
+    <h1>Play Wordle</h1>
+        <div class="game-table">
+            <div class="parent">
+                <div class="column"></div>
+                <div class="column"></div>
+                <div class="column"></div>
+                <div class="column"></div>
+                <div class="column"></div>
+            </div>
+            <div class="parent">
+                <div class="column"></div>
+                <div class="column"></div>
+                <div class="column"></div>
+                <div class="column"></div>
+                <div class="column"></div>
+            </div>
+            <div class="parent">
+                <div class="column"></div>
+                <div class="column"></div>
+                <div class="column"></div>
+                <div class="column"></div>
+                <div class="column"></div>
+            </div>
+            <div class="parent">
+                <div class="column"></div>
+                <div class="column"></div>
+                <div class="column"></div>
+                <div class="column"></div>
+                <div class="column"></div>
+            </div>
+            <div class="parent">
+                <div class="column"></div>
+                <div class="column"></div>
+                <div class="column"></div>
+                <div class="column"></div>
+                <div class="column"></div>
+            </div>
+            <div class="parent">
+                <div class="column"></div>
+                <div class="column"></div>
+                <div class="column"></div>
+                <div class="column"></div>
+                <div class="column"></div>
+            </div>
+        </div>
+        <div class="bottom-panel">
+            <div class="keyboard">
+                <div class="keyboard-row">
+                    <div class="letter" onClick="pressedkey()" letter="q">Q</div>
+                    <div class="letter">W</div>
+                    <div class="letter">E</div>
+                    <div class="letter">R</div>
+                    <div class="letter">T</div>
+                    <div class="letter">Y</div>
+                    <div class="letter">U</div>
+                    <div class="letter">I</div>
+                    <div class="letter">O</div>
+                    <div class="letter">P</div>
+                </div>
+                <div class="keyboard-row">
+                    <div class="letter">A</div>
+                    <div class="letter">S</div>
+                    <div class="letter">D</div>
+                    <div class="letter">F</div>
+                    <div class="letter">G</div>
+                    <div class="letter">H</div>
+                    <div class="letter">J</div>
+                    <div class="letter">K</div>
+                    <div class="letter">L</div>
+                </div>
+                <div class="keyboard-row">
+                    <div class="letter letter-wide">Enter</div>
+                    <div class="letter">Z</div>
+                    <div class="letter">X</div>
+                    <div class="letter">C</div>
+                    <div class="letter">V</div>
+                    <div class="letter">B</div>
+                    <div class="letter">N</div>
+                    <div class="letter">M</div>
+                    <div class="letter letter-wide">Back</div>
+                </div>
+            </div>
+        </div>
+        <div class="center">
+            <button id="select_button" onclick="seeSolution()">See todays solution</button>
+        </div>   
+    </div>
+</body>
+</html>
