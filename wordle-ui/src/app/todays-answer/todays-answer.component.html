@@ -1,0 +1,14 @@
+
+<div class="center">
+    <div class="game-table">
+        <div class="parent" *ngFor="let row of answer">
+            <div *ngFor="let letter of row.letters" class="{{letter.state}}"><div *ngIf="show_letters">{{letter.letter}}</div></div>
+        </div>
+    </div>
+    <div class="center">
+        <div><button class="wordle" *ngIf="show_letters===false" id="select_button" (click)="toggleShow()">See the full solution</button></div>
+        <div><button class="wordle" *ngIf="show_letters" id="select_button" (click)="toggleShow()">Back to pattern</button></div>
+        <div><a href="/play"><button class="wordle" id="play_button" >Play Wordle</button></a></div>
+    </div>   
+</div>
+

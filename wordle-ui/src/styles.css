@@ -1,0 +1,190 @@
+/* You can add global styles to this file, and also import other style files */
+@import '../node_modules/alertifyjs/build/css/alertify.min.css';
+@import '../node_modules/alertifyjs/build/css/themes/bootstrap.min.css';
+
+h1 {
+    font-family: 'Clear Sans', 'Helvetica Neue', Arial, sans-serif;
+    text-align: center;
+}
+
+body {
+    font-family: 'Clear Sans', 'Helvetica Neue', Arial, sans-serif;
+}
+
+.center {
+    text-align: center;
+    margin: 0 auto;
+}
+
+.game-table {
+    display: grid;
+    grid-template-rows: repeat(6, 1fr);
+    grid-gap: 5px;
+    padding: 10px;
+    width: 350px;
+    box-sizing: border-box;
+    margin: 0 auto;
+}
+
+.parent {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-gap: 5px;
+    width: 330px;
+    font-size: 2rem;
+    line-height: 2rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.column {
+    display: inline-flex;
+    width: 62px;
+    height: 62px;
+    background-color: white;
+    color: black;
+    border: 2px solid #878a8c;
+    justify-content: center;
+    vertical-align: middle;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+.correct {
+    display: inline-flex;
+    width: 62px;
+    height: 62px;
+    color: white;
+    justify-content: center;
+    vertical-align: middle;
+    align-items: center;
+    box-sizing: border-box;
+    background-color: #6aaa64;
+}
+
+.present {
+    display: inline-flex;
+    width: 62px;
+    height: 62px;
+    color: white;
+    justify-content: center;
+    vertical-align: middle;
+    align-items: center;
+    box-sizing: border-box;
+    background-color: #c9b458;
+}
+
+.absent {
+    display: inline-flex;
+    width: 62px;
+    height: 62px;
+    color: white;
+    justify-content: center;
+    vertical-align: middle;
+    align-items: center;
+    box-sizing: border-box;
+    background-color: #787c7e;
+}
+
+button.wordle {
+    background-color: #6aaa64;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    border-radius: 5px;
+}
+
+button.blue {
+    background-color: #3498db;
+}
+
+.bottom-panel {
+    justify-content: center;
+    margin: 0 8px;
+}
+
+.keyboard {
+    display: block;
+    width: 500px;
+    height: 200px;
+    margin: 0 auto;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+.keyboard-row {
+    display: flex;
+    width: 100%;
+    margin: 0 auto 8px;
+    justify-content: center;
+}
+
+.letter {
+    display: inline-flex;
+    border: 0;
+    padding: 0;
+    margin: 0 6px 0 0;
+    width: 43px;
+    height: 58px;
+    color: black;
+    background-color: #d3d6da;
+    border-radius: 4px;
+    justify-content: center;
+    vertical-align: middle;
+    align-items: center;
+    box-sizing: border-box;
+    text-transform: uppercase;
+}
+
+.letter-absent {
+    color: white;
+    background-color: #787c7e;
+}
+
+.letter-present {
+    color: white;
+    background-color: #c9b458;
+}
+
+.letter-correct {
+    color: white;
+    background-color: #6aaa64;
+}
+
+.letter-wide {
+    flex: 1.5;
+}
+
+.anime {
+    text-align: center;
+    height: 50px;
+    color: white;
+    animation-name: example;
+    animation-duration: 4s;
+}
+
+@keyframes example {
+    0% {
+        color: red;
+    }
+    5% {
+        transform: translate(-4, 0);
+    } 
+    10% {
+        transform: translate(+4, 0);
+    } 
+    15% {
+        transform: translate(-4, 0);
+    } 
+    20% {
+        transform: translate(0, 0);
+        color: red;
+    }
+    100% {
+        color: black;
+    }
+}

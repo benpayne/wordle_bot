@@ -32,4 +32,5 @@ def main():
     print(res)
 
 if __name__ == "__main__":
-    main()
+    #main()
+    print(f"{yellow_box}{green_box}{grey_box}{grey_box}{grey_box}")

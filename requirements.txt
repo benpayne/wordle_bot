@@ -8,3 +8,4 @@ apscheduler
 pyperclip
 gunicorn
 Flask-APScheduler
+PyMySQL

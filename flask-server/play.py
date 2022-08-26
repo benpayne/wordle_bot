@@ -5,14 +5,19 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 import time
 import argparse
 import pyperclip
+import os
 
 from sim import wordle_bot, weighted_words, expected_info
-from game import print_result, result_done
+from game import print_result, result_done, get_pattern
 from text_sms import send_message
 from database import store_results, db_quit
+
+SELENIUM_ADDR = os.getenv("SELENIUM_ADDR")
+SELENIUM_PORT = os.getenv("SELENIUM_PORT")
 
 def getRowResults(driver, row_id):
     state = []
@@ -26,9 +31,9 @@ def getRowResults(driver, row_id):
 
 def wordle_bot(addr, port, local):
     if addr == None:
-        addr = "192.168.1.202"
+        addr = SELENIUM_ADDR
     if port == None:
-        port = 4444
+        port = SELENIUM_PORT
 
     if local:
         driver = webdriver.Safari()
@@ -43,6 +48,8 @@ def wordle_bot(addr, port, local):
 
     print("driver created")
     driver.get("https://www.nytimes.com/games/wordle/index.html")
+    #driver.get("https://everytimezone.com")
+    #return
     elem = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, 'Modal-module_closeIcon__b4z74')))  
     action = ActionChains(driver)
 
@@ -56,6 +63,7 @@ def wordle_bot(addr, port, local):
 
     answer = ""
     data = []
+    word_data = []
 
     for i in range(6):
         guess = sim.generate_guess(i)
@@ -67,6 +75,7 @@ def wordle_bot(addr, port, local):
         sim.process_result(guess, result)
         answer += print_result(guess, result) + "\n"
         data.append((guess, result))
+        word_data.append(sim.word_list)
         if result_done(result):
             print(f"Solved in {i+1} steps")
             break
@@ -79,10 +88,12 @@ def wordle_bot(addr, port, local):
         button = driver.find_element(By.ID, "share-button")
         button.click()
         time.sleep(1)
-        print(pyperclip.paste())
+        copy_data = pyperclip.paste()
+        print(copy_data)
 
-    store_results("", data)
+    store_results(get_pattern(data), data, word_data)
     print(answer)
+    print(get_pattern(data))
     driver.close()
 
 
@@ -102,3 +113,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+

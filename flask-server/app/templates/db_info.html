@@ -18,18 +18,9 @@
         <tr><td>{{ d }}</td><td>{{row}}</td><td><a href="/delete/{{d}}">delete</a></td></tr>
         {% endfor %}
     </table>
-    <h2>Job Info</h2>
-    <table style="width: 600px">
-        <tr><td>Name</td><td>Trigger</td><td>Next</td></tr>
-        {% for j in jobs %}
-        <tr><td>{{ j.name }}</td><td>{{ j.trigger }}</td><td>{{ j.next_run_time }}</td></tr>
-        {% endfor %}
-    </table>
 
     <h2>Selenium Info</h2>
     <p>Selenium Info: {{selenium_addr}}:{{selenium_port}}</p>
-    <h2>Actions</h2>
-    <button id="load_button" onclick="loadToday()">Load Today</button>
     </div>
 </body>
 </html>

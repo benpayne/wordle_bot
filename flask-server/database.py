@@ -1,7 +1,7 @@
 from email.contentmanager import raw_data_manager
 import os
 import sqlalchemy as db
-from sqlalchemy import create_engine, select, Column, Integer, String, PrimaryKeyConstraint, ForeignKey
+from sqlalchemy import create_engine, select, Column, Integer, String, PrimaryKeyConstraint, JSON, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship, backref
 from datetime import date
@@ -10,7 +10,10 @@ import threading
 import queue
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
-DATABASE_URI = 'sqlite:///' + os.path.join(base_dir, 'database.sqlite3')
+#DATABASE_URI = 'sqlite:///' + os.path.join(base_dir, 'database.sqlite3')
+DATABASE_URI = os.getenv("DATABASE_URI")
+if DATABASE_URI == None:
+    DATABASE_URI = 'mysql://wordle-readonly:abc123@35.224.199.116/wordle'
 
 Base = declarative_base()
 class Results(Base):
@@ -18,9 +21,10 @@ class Results(Base):
     __table_args__ = (
         PrimaryKeyConstraint('date'),
     )
-    date = Column(String, primary_key=True)
-    result_string = Column(String)
-    row_data = Column(String)
+    date = Column(String(60), primary_key=True)
+    result_string = Column(String(1000))
+    row_data = Column(String(1000))
+    word_data = Column(JSON)
 
 db_thread = None
 db_event = None
@@ -29,6 +33,7 @@ db_resoponse = None
 def db_thread_main():
     global db_thread
     global db_event, db_resoponse
+    print(f"DATABASE_URI = {DATABASE_URI}")
     engine = create_engine(DATABASE_URI)
     session = sessionmaker()
     session.configure(bind=engine)
@@ -45,7 +50,7 @@ def db_thread_main():
             r = s.query(Results).filter_by(date=date.today().isoformat()).first()
             if r:
                 s.delete(r)
-            r = Results(date=date.today().isoformat(), result_string=ev[1], row_data=ev[2])
+            r = Results(date=date.today().isoformat(), result_string=ev[1], row_data=ev[2], word_data=ev[3])
             s.add(r)
             s.commit()
             s.close()
@@ -55,9 +60,9 @@ def db_thread_main():
             try:
                 r = s.query(Results).filter_by(date=ev[1]).first()
                 print(r.date)
-                db_resoponse.put((r.result_string, json.loads(r.row_data)))
+                db_resoponse.put((json.loads(r.result_string), json.loads(r.row_data), json.loads(r.word_data)))
             except:
-                db_resoponse.put((None, None))
+                db_resoponse.put((None, None, None))
             s.close()
         elif ev[0] == "get-all":
             s = session()
@@ -69,7 +74,7 @@ def db_thread_main():
                     all_data[row.date] = json.loads(row.row_data)
                 db_resoponse.put(all_data)
             except:
-                db_resoponse.put((None, None))
+                db_resoponse.put((None))
             s.close()
         elif ev[0] == 'delete':
             s = session()
@@ -96,11 +101,11 @@ def create_thread():
         db_thread.start()
 
 
-def store_results(answer_text, data):
+def store_results(answer_text, data, word_data):
     print("store data")
     global db_event
     create_thread()
-    ev = ["store", answer_text, json.dumps(data)]
+    ev = ["store", json.dumps(answer_text), json.dumps(data), json.dumps(word_data)]
     db_event.put(ev)
 
 

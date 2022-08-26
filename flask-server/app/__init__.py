@@ -1,17 +1,10 @@
+import re
 from database import get_results, get_all, delete_result
-from play import wordle_bot
 from flask import Flask, render_template, url_for, redirect
 from markupsafe import escape
 from datetime import date
 import os
 import dateutil.parser as parser 
-
-addr = os.getenv("SELENIUM_ADDR")
-port = os.getenv("SELENIUM_PORT")
-if addr == None:
-    addr = "192.168.1.202"
-if port == None:
-    port = 31496
 
 class Config:
     SCHEDULER_API_ENABLED = True
@@ -23,17 +16,24 @@ class Config:
         }
     ]
 
-print(f"Selenium addr:port {addr}:{port}")
-
 app = Flask(__name__)
 app.config.from_object(Config())
+app.config.from_pyfile('config.py')
 
-
-from . import jobs
+from . import game_info
 
 @app.route("/")
 def top():
     return render_template('top.html')
+
+@app.route("/db-info")
+def db_info():
+    global addr, port
+    data = get_all()
+    steps = {}
+    for d, r in data.items():
+        steps[d] = len(r)
+    return render_template('db_info.html', data=steps, selenium_addr=addr, selenium_port=port)
 
 @app.route("/pattern/<date>")
 def dates_pattern(date):
@@ -49,6 +49,32 @@ def dates_pattern(date):
         data = [[' no  ', ['column', 'present', 'present', 'column', 'column']],['data ', ['present', 'present', 'present', 'present', 'column']]]
         show_answer=True
     return render_template('answer.html', result="", data=data, date=date, show_answer=show_answer)
+
+
+@app.route("/data/<date>")
+def dates_pattern_json(date):
+    data = None
+    try:
+        d = parser.isoparse(date)
+        res_string, data = get_results(d.isoformat().split("T")[0])
+    except:
+        print(f"bad date {date}")
+    print(data)
+    show_answer=False
+    if data == None:
+        data = [[' no  ', ['column', 'present', 'present', 'column', 'column']],['data ', ['present', 'present', 'present', 'present', 'column']]]
+        show_answer=True
+
+    rows = []
+    for r in data:
+        word = r[0]
+        results = r[1]
+        items = []
+        for i, c in enumerate(results):
+            items.append({'letter': word[i], 'state': c})
+        rows.append({'letters': items})
+    return {'res': 'OK', 'rows': rows}
+
 
 
 @app.route("/answer/<date>")

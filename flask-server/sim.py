@@ -88,6 +88,7 @@ class expected_info(wordle_bot):
         super().__init__(print_list)
         self.word_freq = build_work_freq_data()
         self.print_list = print_list
+        self.word_list_data = {}
 
     def pick_best_word(self, word_list, round):
         def map_fn(word):
@@ -97,6 +98,7 @@ class expected_info(wordle_bot):
         highest = 0
         highest_word = None
         highest_data = None
+        word_data = {}
         for i, w in enumerate(weights):
             if self.actual_info < 7:
                 p = w[0]
@@ -104,13 +106,16 @@ class expected_info(wordle_bot):
                 p = w[0] * w[1]
             else:
                 p = w[1]
-            if self.print_list:
-                print(f"{word_list[i]} -> ({w[0]:0.2f}, {w[1]:0.2f}) = {p:0.2f}, ", end='')
+            word_data[word_list[i]] = [w[0], w[1], p]
             if p > highest or highest_word == None:
                 highest = p
                 highest_word = word_list[i]
                 highest_data = w
         if self.print_list:
+            self.word_list_data = {}
+            for word_key, data in sorted(word_data.items(), key = lambda x: x[1][2], reverse=True):
+                print(f"{word_key} -> ({data[0]:0.2f}, {data[1]:0.2f}) = {data[2]:0.2f}, ", end='')
+                self.word_list_data[word_key] = {'exp_info': data[0], 'word_freq': data[1], 'rank': data[2]}
             print("")
             print(f"highest word is {highest_word}, expected info: {highest_data[0]:0.2f}, word freq {highest_data[1]:0.4f}") 
         return highest_word

@@ -1,5 +1,10 @@
 import random
+import re
 from word_work import get_all_words, get_possible_words 
+
+yellow_box = u"\U0001f7e8"
+green_box = u"\U0001f7e9"
+grey_box = u"\u2b1c"
 
 def pick_winning_word():
     words = get_possible_words()
@@ -31,12 +36,25 @@ def print_result(word, states):
             string += l
     return string
 
-#read_guess()
+def get_pattern(results):
+    text = f"Wordle {len(results)}/6\n"
+    for r in results:
+        #print(f"row: {r}")
+        for c in r[1]:
+            if c == 'correct':
+                text += green_box
+            elif c == 'present':
+                text += yellow_box
+            else:
+                text += grey_box
+        text += '\n'
+    return text
+
 
 def compare_guess(winning_word, guess):
     results = ['absent'] * 5
     letters = []
-
+    
     for i, c in enumerate(guess):
         if winning_word[i] == c:
             results[i] = 'correct'
