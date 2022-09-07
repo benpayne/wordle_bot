@@ -6,12 +6,14 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { TodaysAnswerComponent } from './todays-answer/todays-answer.component';
 import { PlayWordleComponent } from './play-wordle/play-wordle.component';
+import { FirstWordComponent } from './first-word/first-word.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     TodaysAnswerComponent,
-    PlayWordleComponent
+    PlayWordleComponent,
+    FirstWordComponent
   ],
   imports: [
     BrowserModule,

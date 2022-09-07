@@ -155,6 +155,7 @@ export class WordleGameService {
         }
       }
     }
+    this.keyboard = new Map<string, string>();
     this.saveRowData();
   }
 

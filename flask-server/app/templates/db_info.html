@@ -3,12 +3,7 @@
 <head>
     <title>Beat the BOT</title>
     <link rel="stylesheet" href="/static/wordle.css">
-    <script>
-        function loadToday() {
-            window.location.href = "{{ url_for('load_data') }}";
-        }
-        </script>
-    </head>
+</head>
 <body>
     <div class="center">
     <h1>Database Info</h1>
@@ -18,9 +13,5 @@
         <tr><td>{{ d }}</td><td>{{row}}</td><td><a href="/delete/{{d}}">delete</a></td></tr>
         {% endfor %}
     </table>
-
-    <h2>Selenium Info</h2>
-    <p>Selenium Info: {{selenium_addr}}:{{selenium_port}}</p>
-    </div>
 </body>
 </html>

@@ -1,0 +1,38 @@
+<p>first-word works!</p>
+<p>enter word: </p>
+<p>clear word</p>
+<p>select list drop down</p>
+<p>list or details</p>
+<div class="center word_list">
+    <div class="row">
+        <div class="col">
+          <div ngbDropdown class="d-inline-block">
+            <button type="button" class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>Word List</button>
+            <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+              <button ngbDropdownItem>All Words</button>
+              <button ngbDropdownItem>Wordle Answers</button>
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Position</th>
+                <th scope="col">Word</th>
+                <th scope="col">Expected Info</th>
+                <th scope="col">Word Weight</th>
+            </tr>    
+        </thead>
+        <tbody>
+            <tr *ngFor="let r of word_list">
+                <td scope="row"><b>{{r.position}}</b></td>
+                <td>{{r.word}}</td>
+                <td>{{r.exp_info | number : '1.2-2'}}</td>
+                <td>{{r.word_weight | number : '1.2-2'}}</td>
+            </tr>    
+        </tbody>
+    </table>
+</div>
+

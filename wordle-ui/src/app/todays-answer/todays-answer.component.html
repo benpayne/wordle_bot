@@ -1,7 +1,7 @@
 
 <div class="center">
     <div class="game-table">
-        <div class="parent" *ngFor="let row of answer">
+        <div class="parent" *ngFor="let row of answer; let i = index" (mouseenter)="rowSelect(i)" (click)="rowSelect(i)">
             <div *ngFor="let letter of row.letters" class="{{letter.state}}"><div *ngIf="show_letters">{{letter.letter}}</div></div>
         </div>
     </div>
@@ -9,6 +9,25 @@
         <div><button class="wordle" *ngIf="show_letters===false" id="select_button" (click)="toggleShow()">See the full solution</button></div>
         <div><button class="wordle" *ngIf="show_letters" id="select_button" (click)="toggleShow()">Back to pattern</button></div>
         <div><a href="/play"><button class="wordle" id="play_button" >Play Wordle</button></a></div>
+        <div><button class="wordle" id="share_button" (click)="share()">Share Solution</button></div>
     </div>   
+    <div class="center" *ngIf="current_row_info != null">
+        Total Words: {{current_row_info.total_words}}
+        Actual Info: {{current_row_info.actual_info | number : '1.2-2'}}
+        Total Info: {{current_row_info.total_info | number : '1.2-2'}}
+        <table class="center">
+            <tr>
+                <th>Word</th>
+                <th><a (click)="sortby('info')">Expected Info</a></th>
+                <th>Word Weight</th>
+                <th><a (click)="sortby('rank')">Rank</a></th>
+            </tr>
+            <tr *ngFor="let r of word_list">
+                <td>{{r.word}}</td>
+                <td>{{r.exp_info | number : '1.2-2' }}</td>
+                <td>{{r.word_freq | number : '1.2-2' }}</td>
+                <td>{{r.rank | number : '1.2-2' }}</td>
+            </tr>
+        </table>
+    </div>
 </div>
-

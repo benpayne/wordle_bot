@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: wordle-job
+spec:
+  schedule: "15 0 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: wordlebot-job
+            image: benpayne/wordlebot:v1.5
+            imagePullPolicy: IfNotPresent
+            workingDir: /app
+            env:
+            - name: SELENIUM_ADDR
+              value: "selenium-service"
+            - name: SELENIUM_PORT
+              value: "4444"
+            - name: DATABASE_URI
+              valueFrom:
+                secretKeyRef:
+                  name: db.wordle.brsoft.io
+                  key: uri
+            command:
+            - /bin/sh
+            - -c
+            - python play.py -a $SELENIUM_ADDR -p $SELENIUM_PORT
+          restartPolicy: OnFailure
+          

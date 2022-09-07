@@ -61,7 +61,8 @@ def db_thread_main():
                 r = s.query(Results).filter_by(date=ev[1]).first()
                 print(r.date)
                 db_resoponse.put((json.loads(r.result_string), json.loads(r.row_data), json.loads(r.word_data)))
-            except:
+            except Exception as e:
+                print(e)
                 db_resoponse.put((None, None, None))
             s.close()
         elif ev[0] == "get-all":
@@ -115,7 +116,7 @@ def get_results(date=None):
     ev = ["get", date]
     db_event.put(ev)
     res_ev = db_resoponse.get()
-    print(f"got result {res_ev}")
+    print(f"got result {res_ev[1]}")
     return res_ev
 
 

@@ -17,13 +17,33 @@ spec:
     spec:
       containers:
         - name: wordlebot
-          image: benpayne/wordlebot:latest
+          image: benpayne/wordlebot:v1.5
           env:
             - name: SELENIUM_ADDR
               value: "selenium-service"
             - name: SELENIUM_PORT
               value: "4444"
+            - name: DATABASE_URI
+              valueFrom:
+                secretKeyRef:
+                  name: db.wordle.brsoft.io
+                  key: uri
+            - name: DATABASE_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: db.wordle.brsoft.io
+                  key: dbhost
+            - name: DATABASE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db.wordle.brsoft.io
+                  key: username
+            - name: DATABASE_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: db.wordle.brsoft.io
+                  key: password
           ports:
-            - containerPort: 80
+            - containerPort: 8000
               protocol: TCP
 

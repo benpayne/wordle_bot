@@ -1,5 +1,4 @@
 <div class="center">
-    <p>Play Wordle</p>
     <div class="game-table">
         <div class="parent" *ngFor="let row of rows">
             <div *ngFor="let letter of row.letters" [ngClass]="letter.state">{{letter.letter}}</div>

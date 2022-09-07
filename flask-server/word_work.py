@@ -124,6 +124,7 @@ class letter_state:
                 self.known_letters[letter] = li
 
     def fliter_list(self, word_list):
+        #print(wor)
         return c_filter(word_list, self.known_letters)
 
     def fliter_list_old(self, word_list):
@@ -338,9 +339,7 @@ def letter_info_test():
 
 
 def letter_frequency():
-
-    with open('data/allowed_words.txt','r') as f:
-        words = f.read().splitlines()
+    words = get_all_words()
 
     first = {}
     second = {}
@@ -374,11 +373,11 @@ def letter_frequency():
             fifth[w[4]] = 1
 
 
-    print(f"First: {sorted(first.items(), key=lambda item: item[1], reverse=True)[0:3]}")
-    print(f"second: {sorted(second.items(), key=lambda item: item[1], reverse=True)[0:3]}")
-    print(f"third: {sorted(third.items(), key=lambda item: item[1], reverse=True)[0:3]}")
-    print(f"fourth: {sorted(fourth.items(), key=lambda item: item[1], reverse=True)[0:3]}")
-    print(f"fifth: {sorted(fifth.items(), key=lambda item: item[1], reverse=True)[0:3]}")
+    print(f"First: {sorted(first.items(), key=lambda item: item[1], reverse=True)[0:5]}")
+    print(f"second: {sorted(second.items(), key=lambda item: item[1], reverse=True)[0:5]}")
+    print(f"third: {sorted(third.items(), key=lambda item: item[1], reverse=True)[0:5]}")
+    print(f"fourth: {sorted(fourth.items(), key=lambda item: item[1], reverse=True)[0:5]}")
+    print(f"fifth: {sorted(fifth.items(), key=lambda item: item[1], reverse=True)[0:5]}")
 
 import pandas as pd
 import numpy as np
@@ -433,8 +432,8 @@ def result_test():
         assert result_to_number(number_to_result(i)) == i
 
 if __name__ == "__main__":
-    word_freq_test()
+    #word_freq_test()
     #exp_info_test()
     #result_test()
     #generate_word_data()
-    #letter_info_test()
+    letter_frequency()

@@ -2,6 +2,12 @@
 @import '../node_modules/alertifyjs/build/css/alertify.min.css';
 @import '../node_modules/alertifyjs/build/css/themes/bootstrap.min.css';
 
+:root {
+    --wordleYellow: color #c9b458;
+    --wordleGreen: color #6aaa64;
+    --wordleGrey: color #878a8c;    
+}
+
 h1 {
     font-family: 'Clear Sans', 'Helvetica Neue', Arial, sans-serif;
     text-align: center;
@@ -83,7 +89,7 @@ body {
     vertical-align: middle;
     align-items: center;
     box-sizing: border-box;
-    background-color: #787c7e;
+    background-color: #878a8c;
 }
 
 button.wordle {
@@ -96,6 +102,7 @@ button.wordle {
     display: inline-block;
     font-size: 16px;
     border-radius: 5px;
+    margin: 2px
 }
 
 button.blue {
@@ -114,6 +121,12 @@ button.blue {
     margin: 0 auto;
     justify-content: center;
     box-sizing: border-box;
+}
+
+@media (max-width: 480px) {
+    .keyboard {
+        width: 100%;
+    }
 }
 
 .keyboard-row {
@@ -140,9 +153,16 @@ button.blue {
     text-transform: uppercase;
 }
 
+@media (max-width: 480px) {
+    .letter {
+        width: 28px;
+        height: 45px;
+    }
+}
+
 .letter-absent {
     color: white;
-    background-color: #787c7e;
+    background-color: #878a8c;
 }
 
 .letter-present {

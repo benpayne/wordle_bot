@@ -9,3 +9,4 @@ pyperclip
 gunicorn
 Flask-APScheduler
 PyMySQL
+mysqlclient

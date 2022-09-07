@@ -75,7 +75,9 @@ def wordle_bot(addr, port, local):
         sim.process_result(guess, result)
         answer += print_result(guess, result) + "\n"
         data.append((guess, result))
-        word_data.append(sim.word_list)
+        first_100 = {k: sim.word_list_data[k] for k in list(sim.word_list_data)[:100]}
+        word_data.append({'total_words': len(sim.word_list_data), 'actual_info': sim.actual_info, \
+            'total_info': sim.total_info, 'first_100': first_100})
         if result_done(result):
             print(f"Solved in {i+1} steps")
             break
