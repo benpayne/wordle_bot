@@ -1,4 +1,4 @@
-# See http://help.github.com/ignore-files/ for more about ignoring files.
+0;276;0c11;rgb:1e1e/1e1e/1e1e0;276;0crgb:1e1e/1e1e/1e1e# See http://help.github.com/ignore-files/ for more about ignoring files.
 
 # Compiled output
 /dist
@@ -40,3 +40,5 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+venv

@@ -1,7 +1,9 @@
-account.py
+0;276;0crgb:1e1e/1e1e/1e1e0;276;0c11;rgb:1e1e/1e1e/1e1e11;rgb:1e1e/1e1e/1e1eaccount.py
 wordle_fast.egg-info/
 geckodriver.log
 .vscode
 __pycache__/
 build/
 dist/
+venv/
+account.py
