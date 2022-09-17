@@ -41,9 +41,8 @@ class wordle_bot:
             #print(self.word_list)
             if len(self.word_list) > 0:
                 word = self.pick_best_word(self.word_list, round)
-                if word not in self.word_list:
-                    print(f"{word} not in list {self.word_list}")
-                self.word_list.remove(word)
+                if word in self.word_list:
+                   self.word_list.remove(word)
                 return word
             else:
                 print("Failed to find a valid word")
@@ -94,36 +93,41 @@ class weighted_words(wordle_bot):
         return highest_word
 
 class expected_info(wordle_bot):
-    def __init__(self, print_list=False) -> None:
+    def __init__(self, print_list=False, threshold_one=7, threshold_two=10) -> None:
         super().__init__(print_list)
         self.word_freq = build_work_freq_data()
         self.print_list = print_list
         self.word_list_data = {}
+        self.threshold_one = threshold_one
+        self.threshold_two = threshold_two
         words = get_first_words("all")
         for key, data in words.items():
             self.word_list_data[key] = {'exp_info': data['exp_info'], 'word_freq': data['word_weight'], 'rank': data['exp_info']}
 
     def pick_best_word(self, word_list, round):
         def map_fn(word):
-            return expected_information(word_list, word), self.word_freq.loc[word]['weights']
+            d = self.word_freq.loc[word]
+            return expected_information(word_list, word), d['weights'], d['rank']
 
-        weights = map(map_fn, word_list)
+        #all_words = get_all_words()
+        all_words = word_list
+        weights = map(map_fn, all_words)
         highest = 0
         highest_word = None
         highest_data = None
         word_data = {}
         #print(f"total_info {self.total_info}")
         for i, w in enumerate(weights):
-            if self.total_info < 7:
+            if self.total_info < self.threshold_two:
                 p = w[0]
-            elif self.total_info < 10:
+            elif self.total_info < self.threshold_one:
                 p = w[0] * w[1]
             else:
-                p = w[1]
-            word_data[word_list[i]] = [w[0], w[1], p]
+                p = w[2]
+            word_data[all_words[i]] = [w[0], w[1], p]
             if p > highest or highest_word == None:
                 highest = p
-                highest_word = word_list[i]
+                highest_word = all_words[i]
                 highest_data = w
         if self.print_list:
             self.word_list_data = {}
@@ -216,7 +220,7 @@ def run_first_word():
     json.dump(res_dict, first_word_data_file)
 
 
-def get_first_words(list_name, count=-1):
+def get_first_words(list_name, count=-1, sort='exp_info'):
     try: 
         first_word_data_file = open(f"first_word_data_{list_name}.json", "r")
         res_dict = json.load(first_word_data_file)
@@ -224,9 +228,9 @@ def get_first_words(list_name, count=-1):
         print(e)
 
     if count < 0:
-        sorted_res = dict(sorted(res_dict.items(), key=lambda item: item[1]['exp_info'], reverse=True))
+        sorted_res = dict(sorted(res_dict.items(), key=lambda item: item[1][sort], reverse=True))
     else:
-        sorted_res = dict(sorted(res_dict.items(), key=lambda item: item[1]['exp_info'], reverse=True)[:count])
+        sorted_res = dict(sorted(res_dict.items(), key=lambda item: item[1][sort], reverse=True)[:count])
 
     return sorted_res
 

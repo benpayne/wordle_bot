@@ -1,28 +1,28 @@
-<p>first-word works!</p>
-<p>enter word: </p>
-<p>clear word</p>
-<p>select list drop down</p>
-<p>list or details</p>
 <div class="center word_list">
     <div class="row">
         <div class="col">
           <div ngbDropdown class="d-inline-block">
             <button type="button" class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>Word List</button>
             <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
-              <button ngbDropdownItem>All Words</button>
-              <button ngbDropdownItem>Wordle Answers</button>
+              <button ngbDropdownItem (click)="wordList('all')">All Words</button>
+              <button ngbDropdownItem (click)="wordList('answers')">Wordle Answers</button>
             </div>
           </div>
         </div>
     </div>
-
+    <div class="center">
+        Current word list: {{word_list_name}}
+    </div>
+    <div class="center">
+        Test First Word: <input type="text" (change)="checkWord()" [(ngModel)]="firstWord">
+    </div>
     <table class="table">
         <thead>
             <tr>
                 <th scope="col">Position</th>
                 <th scope="col">Word</th>
-                <th scope="col">Expected Info</th>
-                <th scope="col">Word Weight</th>
+                <th scope="col"><button (click)="setSortOrder('exp_info')">Expected Info</button></th>
+                <th scope="col"><button (click)="setSortOrder('word_weight')">Word Weight</button></th>
             </tr>    
         </thead>
         <tbody>

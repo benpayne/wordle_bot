@@ -389,10 +389,11 @@ def build_work_freq_data():
     for w in words:
         weights.append(get_word_weight(w))
 
-    df = pd.DataFrame({'words': get_all_words(), 'rank': weights})
+    df = pd.DataFrame({'words': get_all_words(), 'freq': weights})
 
-    df = df.sort_values(by='rank', ascending=False).reset_index(drop=True)
+    df = df.sort_values(by='freq', ascending=False).reset_index(drop=True)
     df['weights'] = 1 - (1 / (1 + np.exp(-(1/100)*(df.index - 4500))))
+    df['rank'] = 1 - (df.index / len(df.index))
     return df.set_index('words')
 
 
@@ -432,8 +433,8 @@ def result_test():
         assert result_to_number(number_to_result(i)) == i
 
 if __name__ == "__main__":
-    #word_freq_test()
+    word_freq_test()
     #exp_info_test()
     #result_test()
     #generate_word_data()
-    letter_frequency()
+    #letter_frequency()

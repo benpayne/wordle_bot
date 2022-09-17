@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpParams, HttpClient } from '@angular/common/http';
 import { FirstWordResponse } from './row';
 import { Observable, of } from 'rxjs';
 
@@ -12,15 +12,19 @@ export class FirstWordService {
 
   constructor(private http: HttpClient) { }
 
-  loadFirstWordList(list_name: string): Observable<FirstWordResponse> {
+  loadFirstWordList(list_name: string, sort: string): Observable<FirstWordResponse> {
     let url = this.first_word_url + list_name
     console.log("get url " + url);
-    return this.http.get<FirstWordResponse>(url);
+    let params = new HttpParams();
+    params = params.append('sort', sort);
+    return this.http.get<FirstWordResponse>(url, {params: params});
   }
 
-  loadFirstWordData(list_name: string, word: string): Observable<FirstWordResponse> {
+  loadFirstWordData(list_name: string, word: string, sort: string): Observable<FirstWordResponse> {
     let url = this.first_word_url + list_name + "/" + word
     console.log("get url " + url);
-    return this.http.get<FirstWordResponse>(url);
+    let params = new HttpParams();
+    params = params.append('sort', sort);
+    return this.http.get<FirstWordResponse>(url, {params: params});
   }
 }

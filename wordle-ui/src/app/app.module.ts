@@ -7,6 +7,8 @@ import { AppComponent } from './app.component';
 import { TodaysAnswerComponent } from './todays-answer/todays-answer.component';
 import { PlayWordleComponent } from './play-wordle/play-wordle.component';
 import { FirstWordComponent } from './first-word/first-word.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -18,7 +20,9 @@ import { FirstWordComponent } from './first-word/first-word.component';
   imports: [
     BrowserModule,
     HttpClientModule,
-    AppRoutingModule
+    AppRoutingModule,
+    NgbModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

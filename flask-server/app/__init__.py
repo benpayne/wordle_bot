@@ -1,7 +1,7 @@
 import re
 from database import get_results, get_all, delete_result
 from sim import get_first_word_stats, get_first_words
-from flask import Flask, render_template, url_for, redirect
+from flask import Flask, render_template, url_for, redirect, request
 from markupsafe import escape
 from datetime import date
 import os
@@ -55,7 +55,13 @@ def get_first_word_list(list_name):
     if list_name != 'all' and list_name != 'answers':
         return {'res': 'Bad List'}
 
-    words = get_first_words(list_name, 20)
+    sort_order = request.args.get('sort')
+    print(f"sort order {sort_order}")
+
+    if sort_order != 'exp_info' and sort_order != 'word_weight':
+        sort_order = 'exp_info'
+
+    words = get_first_words(list_name, 20, sort_order)
     word_list = []
     i = 1
     for k, v in words.items():
