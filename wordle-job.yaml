@@ -10,7 +10,7 @@ spec:
         spec:
           containers:
           - name: wordlebot-job
-            image: benpayne/wordlebot:v1.5
+            image: benpayne/wordle_bot_ci:latest
             imagePullPolicy: IfNotPresent
             workingDir: /app
             env:

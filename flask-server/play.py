@@ -21,10 +21,10 @@ SELENIUM_PORT = os.getenv("SELENIUM_PORT")
 
 def getRowResults(driver, row_id):
     state = []
-    rows = driver.find_elements(By.CLASS_NAME, "Row-module_row__dEHfN")
+    rows = driver.find_elements(By.CLASS_NAME, "Row-module_row__pwpBq")
 
     #print(f"rows found: {len(rows)}")
-    tiles = rows[row_id].find_elements(By.CLASS_NAME, "Tile-module_tile__3ayIZ")
+    tiles = rows[row_id].find_elements(By.CLASS_NAME, "Tile-module_tile__UWEHN")
     for t in tiles:
         state.append(t.get_attribute("data-state"))
     return state
@@ -50,7 +50,7 @@ def wordle_bot(addr, port, local):
     driver.get("https://www.nytimes.com/games/wordle/index.html")
     #driver.get("https://everytimezone.com")
     #return
-    elem = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, 'Modal-module_closeIcon__b4z74')))  
+    elem = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, 'Modal-module_closeIcon__TcEKb')))  
     action = ActionChains(driver)
 
     if elem:

@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: wordlebot
-          image: benpayne/wordlebot:v1.5
+          image: benpayne/wordle_bot_ci:latest
           env:
             - name: SELENIUM_ADDR
               value: "selenium-service"

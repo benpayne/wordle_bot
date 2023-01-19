@@ -26,3 +26,11 @@ solution data
 - row6_word
 - row6_result
 
+DevOps - update process
+
+1. Build flask app server docker image
+2. Push docker image to repo
+3. Update wordle-job and wordle-serivce to use docker image
+4. Build wordle-ui files 
+5. push updated wordle-ui file to bucket
+
