@@ -6,6 +6,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from selenium.common.exceptions import TimeoutException
 import time
 import argparse
 import pyperclip
@@ -50,12 +51,32 @@ def wordle_bot(addr, port, local):
     driver.get("https://www.nytimes.com/games/wordle/index.html")
     #driver.get("https://everytimezone.com")
     #return
-    elem = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, 'Modal-module_closeIcon__TcEKb')))  
-    action = ActionChains(driver)
 
-    if elem:
-        action.move_to_element(elem).perform() 
-        action.click().perform()
+    # <button data-testid="Play" type="button" class="Welcome-module_button__ZG0Zh">Play</button>
+    try:
+        elem = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, 'Welcome-module_button__ZG0Zh')))  
+        action = ActionChains(driver)
+
+        if elem:
+            action.move_to_element(elem).perform() 
+            action.click().perform()
+    except TimeoutException as e:
+        print("Timed out waiting for page to load")
+        return
+
+    time.sleep(1)
+
+    # <button class="Modal-module_closeIcon__TcEKb" type="button" aria-label="Close"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 24 24" width="20" class="game-icon" data-testid="icon-close"><path fill="var(--color-tone-1)" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg></button>
+    try:
+        elem = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, 'Modal-module_closeIcon__TcEKb')))  
+        action = ActionChains(driver)
+
+        if elem:
+            action.move_to_element(elem).perform() 
+            action.click().perform()
+    except TimeoutException as e:
+        print("Timed out waiting for page to load")
+        return
 
     time.sleep(1)
 
@@ -86,8 +107,10 @@ def wordle_bot(addr, port, local):
 
     time.sleep(5)
 
+
     if local:
-        button = driver.find_element(By.ID, "share-button")
+        # <button type="button" class="Footer-module_shareButton__uYhiL"><span class="Footer-module_shareText__gb2Xs">Share</span><svg id="Footer-module_shareIcon__Pz5Am" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 24 24" width="20" class="game-icon" data-testid="icon-share"><path fill="var(--white)" d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92zM18 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM6 13c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm12 7.02c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"></path></svg></button>
+        button = driver.find_element(By.CLASS_NAME, "Footer-module_shareButton__uYhiL")
         button.click()
         time.sleep(1)
         copy_data = pyperclip.paste()
