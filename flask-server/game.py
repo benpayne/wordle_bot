@@ -1,6 +1,7 @@
 import random
 import re
 from word_work import get_all_words, get_possible_words 
+from datetime import datetime
 
 yellow_box = u"\U0001f7e8"
 green_box = u"\U0001f7e9"
@@ -36,8 +37,15 @@ def print_result(word, states):
             string += l
     return string
 
+wordle_day_zero = datetime(year=2021, month=6, day=19)
+def get_puzzle_id(dt: datetime):
+    dt = dt.replace(hour=0, minute=0, second=0, microsecond=0)
+    timediff = dt - wordle_day_zero
+    return timediff.days
+
 def get_pattern(results):
-    text = f"Wordle {len(results)}/6\n"
+    puzzle_id = get_puzzle_id(datetime.now())
+    text = f"Wordle {puzzle_id} {len(results)}/6\n"
     for r in results:
         #print(f"row: {r}")
         for c in r[1]:

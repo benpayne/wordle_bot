@@ -49,6 +49,7 @@ def db_thread_main():
             s = session()
             r = s.query(Results).filter_by(date=date.today().isoformat()).first()
             if r:
+                print(f"deleting {r.date}")
                 s.delete(r)
             r = Results(date=date.today().isoformat(), result_string=ev[1], row_data=ev[2], word_data=ev[3])
             s.add(r)
