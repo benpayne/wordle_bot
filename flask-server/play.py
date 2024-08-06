@@ -50,37 +50,45 @@ def wordle_bot(addr, port, local):
         )   
 
     print("driver created")
-    driver.get("https://www.nytimes.com/games/wordle/index.html")
     #driver.get("https://everytimezone.com")
     #return
+    def load_page():
+        driver.get("https://www.nytimes.com/games/wordle/index.html")
+        # <button data-testid="Play" type="button" class="Welcome-module_button__ZG0Zh">Play</button>
+        try:
+            xpath_expression = '//button[@class="Welcome-module_button__ZG0Zh" and @data-testid="Play" and text()="Play"]'
+            elem = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, xpath_expression)))
+            action = ActionChains(driver)
 
-    # <button data-testid="Play" type="button" class="Welcome-module_button__ZG0Zh">Play</button>
-    try:
-        elem = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, 'Welcome-module_button__ZG0Zh')))  
-        action = ActionChains(driver)
+            if elem:
+                action.move_to_element(elem).perform() 
+                action.click().perform()
+        except TimeoutException as e:
+            print(f"Timed out waiting for page to load ")
+            return False
 
-        if elem:
-            action.move_to_element(elem).perform() 
-            action.click().perform()
-    except TimeoutException as e:
-        print("Timed out waiting for page to load")
+        time.sleep(1)
+
+        # <button class="Modal-module_closeIcon__TcEKb" type="button" aria-label="Close"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 24 24" width="20" class="game-icon" data-testid="icon-close"><path fill="var(--color-tone-1)" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg></button>
+        try:
+            elem = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, 'Modal-module_closeIcon__TcEKb')))  
+            action = ActionChains(driver)
+
+            if elem:
+                action.move_to_element(elem).perform() 
+                action.click().perform()
+        except TimeoutException as e:
+            print("Timed out waiting close button")
+            return False
+
+        time.sleep(1)
+        return True
+    
+    if load_page() is False:
+        print("Failed to load page")
         return
-
-    time.sleep(1)
-
-    # <button class="Modal-module_closeIcon__TcEKb" type="button" aria-label="Close"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 24 24" width="20" class="game-icon" data-testid="icon-close"><path fill="var(--color-tone-1)" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg></button>
-    try:
-        elem = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, 'Modal-module_closeIcon__TcEKb')))  
-        action = ActionChains(driver)
-
-        if elem:
-            action.move_to_element(elem).perform() 
-            action.click().perform()
-    except TimeoutException as e:
-        print("Timed out waiting for page to load")
-        return
-
-    time.sleep(1)
+    
+    action = ActionChains(driver)
 
     sim = expected_info(print_list=True)
 
